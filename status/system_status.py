@@ -5,7 +5,7 @@ from queue import Queue
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
-def getQueue(q, data="", name=""):
+def getQueueData(q, data="", name=""):
     while True:
         if name == "wlan":
             data.wlan = q.get()
@@ -40,5 +40,5 @@ class SystemStatus:
         task1 = self.pool.submit(self.qrScanStatus.run)
         # task3 = self.pool.submit(getQueue, [self.qrScanQueue, self.data, "qr_scan_data"])
         # task4 = self.pool.submit(getQueue, [self.wlanQueue, self.data, "wlan"])
-        task4 = self.pool.submit(lambda p: getQueue(*p), (self.qrScanQueue, self.data, "qr_scan_data"))
-        task4 = self.pool.submit(lambda p: getQueue(*p), (self.wlanQueue, self.data, "wlan"))
+        task2 = self.pool.submit(lambda p: getQueueData(*p), (self.qrScanQueue, self.data, "qr_scan_data"))
+        task3 = self.pool.submit(lambda p: getQueueData(*p), (self.wlanQueue, self.data, "wlan"))

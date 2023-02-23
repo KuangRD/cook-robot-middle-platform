@@ -2,32 +2,41 @@ from flask import Flask
 from flask_cors import CORS
 from flask_restful import Api
 
-from api.v1.wifi import Wifi, Wlan
+from api.v1.wlan import Wifi, Wlan
 from api.v1.status import Status
+from api.v1.dish import Dish, Dishes, StarredDishes, DishesCount, StarredDishesCount
 import sys
 
 from status.system_status import SystemStatus
-
 from model.system_status_data import SystemStatusData
 
+from sqlite_db import Config, db
+
 app = Flask(__name__)
+
+app.config.from_object(Config)
+
+db.init_app(app)
 CORS(app, supports_credentials=True)
+api = Api(app)
 
 systemStatusData = SystemStatusData()
-
-api = Api(app)
+systemStatus = SystemStatus(systemStatusData)
 
 api.add_resource(Wifi, "/system-settings/wifi/<int:flag>", "/system-settings/wifi")
 api.add_resource(Wlan, "/system-settings/wlan/<int:flag>", "/system-settings/wlan")
 api.add_resource(Status, "/system-status", resource_class_kwargs={"data": systemStatusData})
+api.add_resource(Dish, "/dish/", "/dish/<string:dish_id>")
+api.add_resource(Dishes, "/dishes/", "/dishes/<string:initials>")
+api.add_resource(StarredDishes, "/starred-dishes/", "/starred-dishes/<string:initials>")
+api.add_resource(DishesCount, "/dishes-count/", "/dishes-count/<string:initials>")
+api.add_resource(StarredDishesCount, "/starred-dishes-count/", "/starred-dishes-count/<string:initials>")
 
 if __name__ == "__main__":
-    systemStatus = SystemStatus(systemStatusData)
-    systemStatus.run()
-
+    # systemStatus.run()
     if sys.platform == "linux":
         _host = "169.254.216.10"
         # _host = "127.0.0.1"
     else:
         _host = "127.0.0.1"
-    app.run(host=_host, port=8888, debug=False)
+    app.run(host=_host, port=8888, debug=True)

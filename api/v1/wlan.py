@@ -89,7 +89,7 @@ class Wifi(Resource):
         return {"in_use_wifi": in_use_wifi, "no_use_wifi_list": no_use_wifi_list}
 
     def post(self, flag):
-        if flag == 1:
+        if flag == 1:  # 连接wifi
             args = self.parser.parse_args()
             bssid = args.get("bssid")
             password = args.get("password")
@@ -101,7 +101,7 @@ class Wifi(Resource):
                 return "connect failed"
             else:
                 return "connect success"
-        if flag == 0:
+        if flag == 0:  # 断开wifi
             args = self.parser.parse_args()
             ssid = args.get("ssid")
             result = sp.Popen("nmcli connection down " + ssid, shell=True)

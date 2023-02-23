@@ -1,17 +1,16 @@
-import time
+from time import sleep
 
 import serial
 
-ser = serial.Serial("/dev/ttyS0", 9600)
-# ser = serial.Serial("/dev/ttyAMA0", 9600)
 
-while 1:
+ser = serial.Serial("/dev/ttyS0", 9600)
+
+while True:
+    print("waiting")
     count = ser.inWaiting()
     if count != 0:
         recv = ser.read(count)
-        print(recv)
-        # print(recv.encode("unicode_escape"))
-        # ser.write(recv)
+        scan_result = recv.decode("utf-8")
+        print(scan_result)
     ser.flushInput()
-
-    time.sleep(0.1)
+    sleep(0.1)
