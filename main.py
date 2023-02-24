@@ -5,6 +5,8 @@ from flask_restful import Api
 from api.v1.wlan import Wifi, Wlan
 from api.v1.status import Status
 from api.v1.dish import Dish, Dishes, StarredDishes, DishesCount, StarredDishesCount
+from api.v1.ingredient import Ingredients, Shapes
+from api.v1.seasoning import Seasonings
 import sys
 
 from status.system_status import SystemStatus
@@ -31,6 +33,11 @@ api.add_resource(Dishes, "/dishes/", "/dishes/<string:initials>")
 api.add_resource(StarredDishes, "/starred-dishes/", "/starred-dishes/<string:initials>")
 api.add_resource(DishesCount, "/dishes-count/", "/dishes-count/<string:initials>")
 api.add_resource(StarredDishesCount, "/starred-dishes-count/", "/starred-dishes-count/<string:initials>")
+
+api.add_resource(Ingredients, "/ingredients/")
+api.add_resource(Shapes, "/shapes/")
+api.add_resource(Seasonings, "/seasonings/")
+
 
 if __name__ == "__main__":
     # systemStatus.run()
