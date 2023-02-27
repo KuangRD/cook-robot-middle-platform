@@ -17,7 +17,7 @@ class BaseDbModel(db.Model):
                            onupdate=timestamp())
 
     def __init__(self):
-        self.id = str(uuid1)
+        self.id = str(uuid1())
 
     def to_dict(self, columns=[]):
         model_dict = {}

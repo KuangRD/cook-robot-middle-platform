@@ -7,6 +7,7 @@ db = SQLAlchemy()
 
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = "sqlite:////" + dir_path + "/crs.db"
+    # SQLALCHEMY_DATABASE_URI = "sqlite:////" + dir_path + "/crs.db"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + dir_path + "/crs.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_ECHO = True

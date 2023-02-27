@@ -30,40 +30,62 @@ class Dish(Resource):
         res = None
         dish = db.session.execute(db.select(DishDbModel).where(DishDbModel.id == dish_id)).scalar_one_or_none()
         if dish is not None:
-            res = dish.to_dict(["id", "name", "image", "cook_time", "is_starred"])
+            dish_dict = dish.to_dict(["id", "name", "image", "cook_time", "is_starred", "steps", "is_preseted"])
+            dish_dict["steps"] = json.loads(dish_dict["steps"])
+            res = dish_dict
         return res
 
     def post(self):  # 创建单条
         args = self.parser.parse_args()
-        name = args.get("name")
-        cook_time = args.get("cook_time")
-        initials_list = pinyin(name, style=FIRST_LETTER)
-        initials = ""
-        for i in initials_list:
-            initials += i[0]
-        dish = DishDbModel(name, initials, cook_time)
-        db.session.add(dish)
+        try:
+            new_dish = args.get("dish")
+
+            name = new_dish["name"]  # name
+            initials_list = pinyin(name, style=FIRST_LETTER)
+            initials = ""  # initials
+            for i in initials_list:
+                initials += i[0]
+            cook_time = new_dish["cook_time"]  # cook_time
+            # image = "http://169.254.216.10:8888/static/dish_img/test.png"
+            image = "http://localhost:8888/static/dish_img/test.png"  # image
+            steps = new_dish["steps"]  # steps
+            is_starred = 1  # is_starred
+            is_preseted = 0  # is_preseted
+
+            dish = DishDbModel(name, initials, cook_time, image, json.dumps(steps), is_starred, is_preseted)
+            db.session.add(dish)
+            res = {"success": True, "id": dish.id}
+        except Exception as e:
+            print(e.args)
+            db.session.rollback()
+            res = {"success": False}
         db.session.commit()
+        return res
 
     def put(self, dish_id):
         args = self.parser.parse_args()
         new_dish = args.get("dish")
         name = new_dish["name"]
+        steps = new_dish["steps"]
+        cook_time = new_dish["cook_time"]
         # image = base64.b64decode(new_dish["image"].replace("data:image/png;base64,", ""))
         image = new_dish["image"]
         is_starred = new_dish["is_starred"]
         try:
             result = db.session.execute(db.update(DishDbModel).where(DishDbModel.id == dish_id).values(
                 name=name,
+                steps=json.dumps(steps),
+                cook_time=cook_time,
                 image=image,
                 is_starred=is_starred
             ))
+            res = {"success": True}
         except Exception as e:
             print(e)
             db.session.rollback()
-            return False
+            res = {"success": False}
         db.session.commit()
-        return True
+        return res
 
 
 class Dishes(Resource):
