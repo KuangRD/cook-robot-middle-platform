@@ -9,6 +9,7 @@ from api.v1.ingredient import Ingredients, Shapes
 from api.v1.seasoning import Seasonings
 from api.v1.fire import Fires
 from api.v1.stir_fry import StirFries
+from api.v1.command import Command
 import sys
 
 # from status.system_status import SystemStatus
@@ -43,12 +44,17 @@ api.add_resource(Seasonings, "/seasonings/")
 api.add_resource(Fires, "/fires/")
 api.add_resource(StirFries, "/stir-fries/")
 
+api.add_resource(Command, "/command")
 
 if __name__ == "__main__":
     # systemStatus.run()
+
+    # tcp_client.run()
+    # udp_server.run()
+
     if sys.platform == "linux":
-        _host = "169.254.216.10"
-        # _host = "127.0.0.1"
-    else:
+        # _host = "169.254.216.10"
         _host = "127.0.0.1"
+    else:
+        _host = "169.254.70.55"
     app.run(host=_host, port=8888, debug=True)

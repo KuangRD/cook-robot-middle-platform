@@ -47,7 +47,9 @@ class Dish(Resource):
                 initials += i[0]
             cook_time = new_dish["cook_time"]  # cook_time
             # image = "http://169.254.216.10:8888/static/dish_img/test.png"
-            image = "http://localhost:8888/static/dish_img/test.png"  # image
+            # image = "http://localhost:8888/static/dish_img/test.png"  # image
+            with open("./static/dish_img/test.png", mode="rb") as f:
+                image = "data:image/png;base64," + base64.b64encode(f.read()).decode("utf8")
             steps = new_dish["steps"]  # steps
             is_starred = 1  # is_starred
             is_preseted = 0  # is_preseted

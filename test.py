@@ -1,16 +1,8 @@
-from time import sleep
+import base64
 
-import serial
+if __name__ == "__main__":
+    with open("./static/dish_img/test.png", mode="rb") as f:
+        img = "data:image/png;base64," + base64.b64encode(f.read()).decode("utf8")
+        print(img)
 
 
-ser = serial.Serial("/dev/ttyS0", 9600)
-
-while True:
-    print("waiting")
-    count = ser.inWaiting()
-    if count != 0:
-        recv = ser.read(count)
-        scan_result = recv.decode("utf-8")
-        print(scan_result)
-    ser.flushInput()
-    sleep(0.1)
