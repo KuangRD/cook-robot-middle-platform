@@ -41,6 +41,7 @@ class Dish(Resource):
             new_dish = args.get("dish")
 
             name = new_dish["name"]  # name
+
             initials_list = pinyin(name, style=FIRST_LETTER)
             initials = ""  # initials
             for i in initials_list:

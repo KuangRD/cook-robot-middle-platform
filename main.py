@@ -9,7 +9,8 @@ from api.v1.ingredient import Ingredients, Shapes
 from api.v1.seasoning import Seasonings
 from api.v1.fire import Fires
 from api.v1.stir_fry import StirFries
-from api.v1.command import Command
+from api.v1.command import Command,PLCCommand
+from api.v1.running_status import RunningStatus
 import sys
 
 # from status.system_status import SystemStatus
@@ -45,6 +46,9 @@ api.add_resource(Fires, "/fires/")
 api.add_resource(StirFries, "/stir-fries/")
 
 api.add_resource(Command, "/command")
+api.add_resource(PLCCommand, "/plc-command")
+
+api.add_resource(RunningStatus, "/running-status")
 
 if __name__ == "__main__":
     # systemStatus.run()
@@ -56,5 +60,7 @@ if __name__ == "__main__":
         # _host = "169.254.216.10"
         _host = "127.0.0.1"
     else:
-        _host = "169.254.70.55"
+        # _host = "169.254.70.55"
+        _host = "169.254.216.164"
+    # _host = "127.0.0.1"
     app.run(host=_host, port=8888, debug=True)
