@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from udp_client import udp_status_client
+# from udp_client import udp_status_client
 
 
 class RunningStatus(Resource):

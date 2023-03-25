@@ -1,8 +1,12 @@
 import base64
+import struct
 
 if __name__ == "__main__":
-    with open("./static/dish_img/test.png", mode="rb") as f:
-        img = "data:image/png;base64," + base64.b64encode(f.read()).decode("utf8")
-        print(img)
+
+    crc16 = b"D5CA"
+    print(crc16)
+    print(int(crc16, base=16))
+
+    print(b"0x"+crc16)
 
 

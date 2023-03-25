@@ -21,7 +21,7 @@ class CommandPacker:
         instructions = command["instructions"]
         if len(instructions) == 0:
             raise NameError("instructions is empty")
-        data_length = 14 * len(instructions)
+        data_length = 14 + 14 * len(instructions)
         self.msg += struct.pack(">I", data_length)  # DATA_LENGTH, 4 bytes
 
         # DATA_INFO
@@ -172,7 +172,7 @@ class PLCCommandPacker:
                     instruction_measures = struct.pack(">I", 0)
             elif instruction["type"] == "pump":
                 instruction_type = b"\x23"
-                instruction_target = struct.pack(">H", 0)
+                instruction_target = struct.pack(">H", instruction["target"])
                 instruction_action = b"\x00"
                 instruction_measures = struct.pack(">I", instruction["measures"][0])
             elif instruction["type"] == "shake":
@@ -195,9 +195,10 @@ class PLCCommandPacker:
                 raise NameError("instruction type error")
             self.data += instruction_type + instruction_target + instruction_action + instruction_measures \
                          + struct.pack(">I", int(instruction["time"]))
+        print(instruction_type)
         data_length = len(self.data)
         print(data_length)
-        self.msg += struct.pack(">I", data_length)  # DATA_LENGTH, 4 bytes
+        self.msg += struct.pack(">I", 14 + data_length)  # DATA_LENGTH, 4 bytes
         self.msg += self.data_info
         self.msg += self.data
 

@@ -68,6 +68,6 @@ class UDPStatusClient(UDPClient):
 udp_command_client = UDPCommandClient(UNIX_SOCK_PIPE_PATH_COMMAND_CLIENT,
                                       UNIX_SOCK_PIPE_PATH_COMMAND_SERVER,
                                       COMMAND_PORT)
-udp_status_client = UDPStatusClient(UNIX_SOCK_PIPE_PATH_STATUS_CLIENT,
-                                    UNIX_SOCK_PIPE_PATH_STATUS_SERVER,
-                                    STATUS_PORT)
+# udp_status_client = UDPStatusClient(UNIX_SOCK_PIPE_PATH_STATUS_CLIENT,
+#                                     UNIX_SOCK_PIPE_PATH_STATUS_SERVER,
+#                                     STATUS_PORT)
