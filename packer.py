@@ -157,33 +157,35 @@ class PLCCommandPacker:
             elif instruction["type"] == "r":
                 instruction_type = b"\x22"
                 if instruction["action"] == "on":
-                    if instruction["target"] == "forward":  # 正转
-                        instruction_target = struct.pack(">H", 1)
-                    elif instruction["target"] == "reverse":  # 反转
-                        instruction_target = struct.pack(">H", 2)
-                    else:  # 正反转
-                        instruction_target = struct.pack(">H", 3)
+                    instruction_target = struct.pack(">H", instruction["target"])
                     instruction_action = b"\x01"
-                    instruction_measures = struct.pack(">B", instruction["measures"][0]) \
-                                           + struct.pack(">B", instruction["measures"][1]) + struct.pack(">H", 0)
+                    instruction_measures = struct.pack(">I", instruction["measures"][0])
                 else:  # 停转
                     instruction_target = struct.pack(">H", 0)
                     instruction_action = b"\x02"
                     instruction_measures = struct.pack(">I", 0)
-            elif instruction["type"] == "pump":
+            elif instruction["type"] == "liquid_pump":
                 instruction_type = b"\x23"
                 instruction_target = struct.pack(">H", instruction["target"])
                 instruction_action = b"\x00"
                 instruction_measures = struct.pack(">I", instruction["measures"][0])
-            elif instruction["type"] == "shake":
+            elif instruction["type"] == "solid_pump":
                 instruction_type = b"\x24"
+                instruction_target = struct.pack(">H", instruction["target"])
+                instruction_action = b"\x00"
+                instruction_measures = struct.pack(">I", instruction["measures"][0])
+            elif instruction["type"] == "water_pump":
+                instruction_type = b"\x25"
+                instruction_target = struct.pack(">H", instruction["target"])
+                instruction_action = b"\x00"
+                instruction_measures = struct.pack(">I", instruction["measures"][0])
+            elif instruction["type"] == "shake":
+                instruction_type = b"\x26"
                 instruction_target = struct.pack(">H", 0)
                 instruction_action = b"\x00"
-                instruction_measures = struct.pack(">B", instruction["measures"][0]) \
-                                       + struct.pack(">B", instruction["measures"][1]) \
-                                       + struct.pack(">B", instruction["measures"][2]) + struct.pack(">B", 0)
+                instruction_measures = struct.pack(">I", instruction["measures"][0])
             elif instruction["type"] == "temperature":
-                instruction_type = b"\x25"
+                instruction_type = b"\x27"
                 instruction_target = struct.pack(">H", 0)
                 if instruction["action"] == "on":
                     instruction_action = b"\x01"
@@ -191,13 +193,33 @@ class PLCCommandPacker:
                 else:  # 关闭
                     instruction_action = b"\x02"
                     instruction_measures = struct.pack(">I", 0)
+            elif instruction["type"] == "setting_x":
+                instruction_type = b"\x50"
+                instruction_target = struct.pack(">H", 0)
+                instruction_action = b"\x00"
+                instruction_measures = struct.pack(">I", instruction["measures"][0])
+            elif instruction["type"] == "setting_y":
+                instruction_type = b"\x51"
+                instruction_target = struct.pack(">H", 0)
+                instruction_action = b"\x00"
+                instruction_measures = struct.pack(">I", instruction["measures"][0])
+            elif instruction["type"] == "setting_r":
+                instruction_type = b"\x52"
+                instruction_target = struct.pack(">H", 0)
+                instruction_action = b"\x00"
+                instruction_measures = struct.pack(">H", instruction["measures"][0]) \
+                                       + struct.pack(">H", instruction["measures"][1])
+            elif instruction["type"] == "setting_shake":
+                instruction_type = b"\x53"
+                instruction_target = struct.pack(">H", 0)
+                instruction_action = b"\x00"
+                instruction_measures = struct.pack(">H", instruction["measures"][0]) \
+                                       + struct.pack(">H", instruction["measures"][1])
             else:
                 raise NameError("instruction type error")
             self.data += instruction_type + instruction_target + instruction_action + instruction_measures \
                          + struct.pack(">I", int(instruction["time"]))
-        print(instruction_type)
         data_length = len(self.data)
-        print(data_length)
         self.msg += struct.pack(">I", 14 + data_length)  # DATA_LENGTH, 4 bytes
         self.msg += self.data_info
         self.msg += self.data
