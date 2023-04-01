@@ -1,0 +1,5 @@
+pypinyin~=0.48.0
+pyserial~=3.5
+apscheduler~=3.10.0
+flask~=2.2.2
+uuid~=1.30
