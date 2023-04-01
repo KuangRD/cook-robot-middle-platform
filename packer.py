@@ -215,6 +215,12 @@ class PLCCommandPacker:
                 instruction_action = b"\x00"
                 instruction_measures = struct.pack(">H", instruction["measures"][0]) \
                                        + struct.pack(">H", instruction["measures"][1])
+            elif instruction["type"] == "setting_temperature":
+                instruction_type = b"\x54"
+                instruction_target = struct.pack(">H", 0)
+                instruction_action = b"\x00"
+                instruction_measures = struct.pack(">H", instruction["measures"][0]) \
+                                       + struct.pack(">H", instruction["measures"][1])
             else:
                 raise NameError("instruction type error")
             self.data += instruction_type + instruction_target + instruction_action + instruction_measures \
@@ -223,109 +229,6 @@ class PLCCommandPacker:
         self.msg += struct.pack(">I", 14 + data_length)  # DATA_LENGTH, 4 bytes
         self.msg += self.data_info
         self.msg += self.data
-
-
-# class PLCCommandPacker:
-#     count = 1
-#
-#     def __init__(self):
-#         self.msg = HEADER.encode()  # HEADER, 4 bytes
-#         self.data_info = b""
-#         self.data = b""
-#         PLCCommandPacker.count += 1
-#
-#     def pack(self, command: dict):
-#         model = command["model"]
-#         instructions = command["instructions"]
-#         if len(instructions) == 0:
-#             raise NameError("instructions is empty")
-#
-#         # DATA_INFO
-#         self.data_info += COMMAND_DATA_HEADER.encode()  # DATA_HEADER, 3 bytes
-#         self.data_info += struct.pack(">I", self.count)  # DATA_NO, 4 bytes
-#         self.data_info += b"\x01" if model == "single" else b"\x02" if model == "multiple" else b"\x03"
-#         self.data_info += struct.pack(">H", len(instructions))  # INSTRUCTION_COUNT, 2 bytes
-#         self.data_info += struct.pack(">I", int(time()))  # DATA_DATETIME, 4 bytes
-#
-#         for instruction in instructions:
-#             if instruction["type"] == "x":
-#                 if instruction["action"] == "on":
-#                     # D20=1,D22=target
-#                     address_number = struct.pack(">B", 2)  # 1 byte
-#                     address_no_1 = struct.pack(">H", 20)  # 2 bytes
-#                     address_value_1 = struct.pack(">H", 1)  # 2 bytes
-#                     address_no_2 = struct.pack(">H", 22)  # 2 bytes
-#                     address_value_2 = struct.pack(">H", int(instruction["target"]))  # 2 bytes
-#                     self.data += address_number + address_no_1 + address_value_1 + address_no_2 + address_value_2
-#                 else:
-#                     # 复位 D2=1
-#                     address_number = struct.pack(">B", 1)  # 1 byte
-#                     address_no_1 = struct.pack(">H", 2)  # 2 bytes
-#                     address_value_1 = struct.pack(">H", 1)  # 2 bytes
-#                     self.data += address_number + address_no_1 + address_value_1
-#             elif instruction["type"] == "y":
-#                 if instruction["action"] == "on":
-#                     # D10=1,D12=target
-#                     address_number = struct.pack(">B", 2)  # 1 byte
-#                     address_no_1 = struct.pack(">H", 10)  # 2 bytes
-#                     address_value_1 = struct.pack(">H", 1)  # 2 bytes
-#                     address_no_2 = struct.pack(">H", 12)  # 2 bytes
-#                     address_value_2 = struct.pack(">H", int(instruction["target"]))  # 2 bytes
-#                     self.data += address_number + address_no_1 + address_value_1 + address_no_2 + address_value_2
-#                 else:
-#                     # 复位 D0=1
-#                     address_number = struct.pack(">B", 1)  # 1 byte
-#                     address_no_1 = struct.pack(">H", 0)  # 2 bytes
-#                     address_value_1 = struct.pack(">H", 1)  # 2 bytes
-#                     self.data += address_number + address_no_1 + address_value_1
-#             elif instruction["type"] == "r":
-#                 if instruction["action"] == "on":
-#                     # 开始转动
-#                     address_number = struct.pack(">B", 2)  # 1 byte
-#                     address_no_1 = struct.pack(">H", 4)  # 2 bytes
-#                     address_value_1 = struct.pack(">H", 1)  # 2 bytes
-#                     address_no_2 = struct.pack(">H", 6)  # 2 bytes
-#                     if instruction["target"] == "forward":
-#                         # 正转，D4=1,D6=1,**D8=speed,D10=circles**
-#                         address_value_2 = struct.pack(">H", 1)  # 2 bytes
-#                     elif instruction["target"] == "reverse":
-#                         # 反转，D4=1,D6=2,**D8=speed,D10=circles**
-#                         address_value_2 = struct.pack(">H", 2)  # 2 bytes
-#                     else:
-#                         # 正反转，D4=1,D6=3,**D8=speed,D10=circles**
-#                         address_value_2 = struct.pack(">H", 3)  # 2 bytes
-#                     self.data += address_number + address_no_1 + address_value_1 + address_no_2 + address_value_2
-#                 else:
-#                     # 停止转动 D4=0
-#                     address_number = struct.pack(">B", 1)  # 1 byte
-#                     address_no_1 = struct.pack(">H", 4)  # 2 bytes
-#                     address_value_1 = struct.pack(">H", 0)  # 2 bytes
-#                     self.data += address_number + address_no_1 + address_value_1
-#             elif instruction["type"] == "pump":
-#                 # D40=1,D42=target,D44=period
-#                 address_number = struct.pack(">B", 3)  # 1 byte
-#                 address_no_1 = struct.pack(">H", 40)  # 2 bytes
-#                 address_value_1 = struct.pack(">H", 1)  # 2 bytes
-#                 address_no_2 = struct.pack(">H", 42)  # 2 bytes
-#                 address_value_2 = struct.pack(">H", int(instruction["target"]))  # 2 bytes 单位0.1s
-#                 address_no_3 = struct.pack(">H", 44)  # 2 bytes
-#                 address_value_3 = struct.pack(">H", instruction["measures"][0])  # 2 bytes
-#                 self.data += address_number + address_no_1 + address_value_1 + address_no_2 + address_value_2 + address_no_3 + address_value_3
-#             elif instruction["type"] == "shake":
-#                 # D30=1,D34=count,up_speed,down_speed
-#                 address_number = struct.pack(">B", 2)  # 1 byte
-#                 address_no_1 = struct.pack(">H", 30)  # 2 bytes
-#                 address_value_1 = struct.pack(">H", 1)  # 2 bytes
-#                 address_no_2 = struct.pack(">H", 34)  # 2 bytes
-#                 address_value_2 = struct.pack(">H", instruction["measures"][0])  # 2 bytes 单位0.1s
-#                 self.data += address_number + address_no_1 + address_value_1 + address_no_2 + address_value_2
-#             else:
-#                 raise NameError("instruction type error")
-#             self.data += struct.pack(">I", int(instruction["time"]))  # 4 bytes
-#         data_length = len(self.data)
-#         self.msg += struct.pack(">I", data_length)  # DATA_LENGTH, 4 bytes
-#         self.msg += self.data_info
-#         self.msg += self.data
 
 
 if __name__ == "__main__":

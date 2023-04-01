@@ -1,12 +1,12 @@
 import base64
 import struct
+import datetime
+import time
 
 if __name__ == "__main__":
 
-    crc16 = b"D5CA"
-    print(crc16)
-    print(int(crc16, base=16))
-
-    print(b"0x"+crc16)
+    while 1:
+        print(time.time())
+        time.sleep(0.01)
 
 
