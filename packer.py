@@ -4,6 +4,8 @@ from time import time
 HEADER = "COOK"
 COMMAND_DATA_HEADER = "CCS"
 INQUIRY_DATA_HEADER = "CIS"
+STATE_REQUEST_DATA_HEADER = "CSS"
+STATE_RESPONSE_DATA_HEADER = "CSR"
 
 
 # HEADER DATA_LENGTH DATA_INFO DATA1 DATA2 DATA3 ...
@@ -229,6 +231,26 @@ class PLCCommandPacker:
         self.msg += struct.pack(">I", 14 + data_length)  # DATA_LENGTH, 4 bytes
         self.msg += self.data_info
         self.msg += self.data
+
+
+class StateRequestPacker:
+    count = 1
+
+    def __init__(self):
+        self.msg = HEADER.encode()  # HEADER, 4 bytes
+        self.data_info = b""
+        StateRequestPacker.count += 1
+
+    def pack(self):
+        self.msg += struct.pack(">I", 14)  # DATA_LENGTH, 4 bytes
+
+        self.data_info += STATE_REQUEST_DATA_HEADER.encode()  # DATA_HEADER, 3 bytes
+        self.data_info += struct.pack(">I", self.count)  # DATA_NO, 4 bytes
+        self.data_info += b"\x00"  # DATA_SIGNAL, 1 byte
+        self.data_info += b"\x00\x00"
+        self.data_info += struct.pack(">I", int(time()))  # DATA_DATETIME, 4 bytes
+
+        self.msg += self.data_info
 
 
 if __name__ == "__main__":

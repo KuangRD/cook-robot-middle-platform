@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-# from udp_client import udp_status_client
+from udp_client import plc_state
 
 
 class RunningStatus(Resource):
@@ -14,6 +14,7 @@ class RunningStatus(Resource):
     def get(self):
         res = {
             "success": True,
-            "data": {}
+            "data": plc_state
         }
+
         return res

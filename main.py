@@ -1,6 +1,9 @@
+import threading
+
 from flask import Flask
 from flask_cors import CORS
 from flask_restful import Api
+from apscheduler.schedulers.background import BackgroundScheduler
 
 # from api.v1.wlan import Wifi, Wlan
 # from api.v1.status import Status
@@ -9,12 +12,14 @@ from api.v1.ingredient import Ingredients, Shapes
 from api.v1.seasoning import Seasonings
 from api.v1.fire import Fires
 from api.v1.stir_fry import StirFries
-from api.v1.command import Command,PLCCommand
+from api.v1.command import Command, PLCCommand
 from api.v1.running_status import RunningStatus
 import sys
 
 # from status.system_status import SystemStatus
 # from model.system_status_data import SystemStatusData
+from packer import StateRequestPacker
+from udp_client import command_client, status_client
 
 from sqlite_db import Config, db
 
@@ -51,6 +56,19 @@ api.add_resource(PLCCommand, "/plc-command")
 api.add_resource(RunningStatus, "/running-status")
 
 if __name__ == "__main__":
+
+    state_request_packer = StateRequestPacker()
+    state_request_packer.pack()
+
+    t1 = threading.Thread(target=command_client.run)
+    t2 = threading.Thread(target=status_client.run)
+    t1.start()
+    t2.start()
+
+    apscheduler = BackgroundScheduler()  # 创建调度器
+    apscheduler.add_job(status_client.send, args=(state_request_packer.msg,), trigger="interval", seconds=1, )
+    apscheduler.start()
+
     # systemStatus.run()
 
     # tcp_client.run()
@@ -63,4 +81,4 @@ if __name__ == "__main__":
         # _host = "169.254.70.55"
         _host = "169.254.216.164"
     _host = "127.0.0.1"
-    app.run(host=_host, port=8888, debug=True)
+    app.run(host=_host, port=8888, debug=False)

@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from udp_client import udp_command_client
+from udp_client import command_client
 from packer import CommandPacker, InquiryPacker, PLCCommandPacker
 
 
@@ -26,11 +26,11 @@ class Command(Resource):
         except Exception as e:
             print(e)
             return res
-        # inquiry_result = udp_command_client.send(inquiry_packer.msg)
+        # inquiry_result = command_client.send(inquiry_packer.msg)
         # if not inquiry_result:
         #     return res
 
-        command_result = udp_command_client.send(command_packer.msg)
+        command_result = command_client.send(command_packer.msg)
         if not command_result:
             return res
 
@@ -68,11 +68,11 @@ class PLCCommand(Resource):
         # except Exception as e:
         #     print(e)
         #     return res
-        # inquiry_result = udp_command_client.send(inquiry_packer.msg)
+        # inquiry_result = command_client.send(inquiry_packer.msg)
         # if not inquiry_result:
         #     return res
         #
-        command_result = udp_command_client.send(plc_command_packer.msg)
+        command_result = command_client.send(plc_command_packer.msg)
         if not command_result:
             return res
 
