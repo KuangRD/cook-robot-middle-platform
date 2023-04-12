@@ -8,18 +8,20 @@ from packer import StateRequestPacker
 
 UNIX_SOCK_PIPE_PATH_COMMAND_CLIENT = "/tmp/unixsock_command_client.sock"
 UNIX_SOCK_PIPE_PATH_COMMAND_SERVER = "/tmp/unixsock_command_server.sock"
-UNIX_SOCK_PIPE_PATH_STATUS_CLIENT = "/tmp/unixsock_status_client.sock"
-UNIX_SOCK_PIPE_PATH_STATUS_SERVER = "/tmp/unixsock_status_server.sock"
+UNIX_SOCK_PIPE_PATH_STATE_CLIENT = "/tmp/unixsock_state_client.sock"
+UNIX_SOCK_PIPE_PATH_STATE_SERVER = "/tmp/unixsock_state_server.sock"
 HOST = "127.0.0.1"
 # HOST = "169.254.70.55"
 COMMAND_CLIENT_PORT = 10010
 COMMAND_SERVER_PORT = 10011
-STATUS_CLIENT_PORT = 10012
-STATUS_SERVER_PORT = 10013
+STATE_CLIENT_PORT = 10012
+STATE_SERVER_PORT = 10013
 
 plc_state = {}
 
 state_template = {
+    "time": 0,
+
     "y_reset_control_word": 0,
     "y_set_control_word": 0,
     "y_set_target_position": 0,
@@ -72,7 +74,7 @@ state_template = {
 class UDPClient:
     def __init__(self, local_path, remote_path, local_port, remote_port):
         self.client = None
-        if sys.platform == "linux":
+        if sys.platform == "linux11":
             self.client = socket.socket(family=socket.AF_UNIX, type=socket.SOCK_DGRAM)
             if os.path.exists(local_path):
                 os.remove(local_path)
@@ -88,7 +90,11 @@ class UDPClient:
 
     def run(self):
         while True:
-            msg, addr = self.client.recvfrom(1024)
+            try:
+                msg, addr = self.client.recvfrom(1024)
+            except Exception as e:
+                print(e)
+                continue
             header = msg[0:4].decode("utf-8")
             if header == "COOK":  # 判断数据包header，如果是COOK，表示为数据包开头，如果不是，则继续
                 length = struct.unpack(">I", msg[4:8])[0]
@@ -120,9 +126,10 @@ class UDPCommandClient(UDPClient):
             return False
 
 
-class UDPStatusClient(UDPClient):
+class UDPStateClient(UDPClient):
     def __init__(self, local_path, remote_path, local_port, remote_port):
         super().__init__(local_path, remote_path, local_port, remote_port)
+        self.count = 1
 
     def _process(self, data: bytes):
         data_header = data[0:3].decode("utf-8")
@@ -139,6 +146,6 @@ class UDPStatusClient(UDPClient):
 command_client = UDPCommandClient(UNIX_SOCK_PIPE_PATH_COMMAND_CLIENT,
                                   UNIX_SOCK_PIPE_PATH_COMMAND_SERVER,
                                   COMMAND_CLIENT_PORT, COMMAND_SERVER_PORT)
-status_client = UDPStatusClient(UNIX_SOCK_PIPE_PATH_STATUS_CLIENT,
-                                UNIX_SOCK_PIPE_PATH_STATUS_SERVER,
-                                STATUS_CLIENT_PORT, STATUS_SERVER_PORT)
+state_client = UDPStateClient(UNIX_SOCK_PIPE_PATH_STATE_CLIENT,
+                              UNIX_SOCK_PIPE_PATH_STATE_SERVER,
+                              STATE_CLIENT_PORT, STATE_SERVER_PORT)

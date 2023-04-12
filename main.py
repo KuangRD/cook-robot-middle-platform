@@ -19,7 +19,7 @@ import sys
 # from status.system_status import SystemStatus
 # from model.system_status_data import SystemStatusData
 from packer import StateRequestPacker
-from udp_client import command_client, status_client
+from udp_client import command_client, state_client
 
 from sqlite_db import Config, db
 
@@ -59,14 +59,13 @@ if __name__ == "__main__":
 
     state_request_packer = StateRequestPacker()
     state_request_packer.pack()
-
     t1 = threading.Thread(target=command_client.run)
-    t2 = threading.Thread(target=status_client.run)
+    t2 = threading.Thread(target=state_client.run)
     t1.start()
     t2.start()
 
     apscheduler = BackgroundScheduler()  # 创建调度器
-    apscheduler.add_job(status_client.send, args=(state_request_packer.msg,), trigger="interval", seconds=1, )
+    apscheduler.add_job(state_client.send, args=(state_request_packer.msg,), trigger="interval", seconds=1, )
     apscheduler.start()
 
     # systemStatus.run()
