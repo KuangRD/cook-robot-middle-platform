@@ -79,5 +79,6 @@ if __name__ == "__main__":
     else:
         # _host = "169.254.70.55"
         _host = "169.254.216.164"
+    # _host = "192.168.31.168"
     _host = "127.0.0.1"
     app.run(host=_host, port=8888, debug=False)

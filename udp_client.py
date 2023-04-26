@@ -21,6 +21,7 @@ plc_state = {}
 
 state_template = {
     "time": 0,
+    "machine_state": 0,
 
     "y_reset_control_word": 0,
     "y_set_control_word": 0,
