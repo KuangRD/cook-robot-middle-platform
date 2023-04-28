@@ -11,7 +11,7 @@ class Seasonings(Resource):
         res = []
         seasonings = db.session.execute(
             db.select(SeasoningDbModel).order_by(SeasoningDbModel.updated_at.desc())).scalars()
-        for ing in seasonings:
-            res.append(ing.to_dict(["id", "name"]))
+        for seasoning in seasonings:
+            res.append(seasoning.to_dict(["id", "name", "slot"]))
         return res
 

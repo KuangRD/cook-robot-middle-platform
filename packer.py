@@ -84,6 +84,11 @@ class CommandPacker:
                 instruction_target = b"\x00\x00"
                 instruction_action = b"\x00"
                 instruction_measures = b"\x00\x00\x00\x00"
+            elif instruction["type"] == "finish":
+                instruction_type = b"\x08"
+                instruction_target = b"\x00\x00"
+                instruction_action = b"\x00"
+                instruction_measures = b"\x00\x00\x00\x00"
             else:
                 raise NameError("instruction type is wrong")
             self.data += instruction_type + instruction_target + instruction_action + instruction_measures \
