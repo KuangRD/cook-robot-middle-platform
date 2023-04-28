@@ -89,6 +89,21 @@ class CommandPacker:
                 instruction_target = b"\x00\x00"
                 instruction_action = b"\x00"
                 instruction_measures = b"\x00\x00\x00\x00"
+            elif instruction["type"] == "reset0":
+                instruction_type = b"\x09"
+                instruction_target = b"\x00\x00"
+                instruction_action = b"\x00"
+                instruction_measures = b"\x00\x00\x00\x00"
+            elif instruction["type"] == "reset1":
+                instruction_type = b"\x0a"
+                instruction_target = b"\x00\x00"
+                instruction_action = b"\x00"
+                instruction_measures = b"\x00\x00\x00\x00"
+            elif instruction["type"] == "wash":
+                instruction_type = b"\x0b"
+                instruction_target = b"\x00\x00"
+                instruction_action = b"\x00"
+                instruction_measures = b"\x00\x00\x00\x00"
             else:
                 raise NameError("instruction type is wrong")
             self.data += instruction_type + instruction_target + instruction_action + instruction_measures \
