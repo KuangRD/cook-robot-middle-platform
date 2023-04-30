@@ -29,7 +29,15 @@ class CommandPacker:
         # DATA_INFO
         self.data_info += COMMAND_DATA_HEADER.encode()  # DATA_HEADER, 3 bytes
         self.data_info += struct.pack(">I", self.count)  # DATA_NO, 4 bytes
-        self.data_info += b"\x01" if model == "single" else b"\x02" if model == "multiple" else b"\x03"  # INSTRUCTION_MODEL, 1 byte
+        if model == "single":
+            self.data_info += b"\x01"
+        elif model == "multiple":
+            self.data_info += b"\x02"
+        elif model == "plc":
+            self.data_info += b"\x03"
+        elif model == "immediate":
+            self.data_info += b"\x04"
+
         self.data_info += struct.pack(">H", len(instructions))  # INSTRUCTION_COUNT, 2 bytes
         self.data_info += struct.pack(">I", int(time()))  # DATA_DATETIME, 4 bytes
         self.msg += self.data_info
@@ -101,6 +109,11 @@ class CommandPacker:
                 instruction_measures = b"\x00\x00\x00\x00"
             elif instruction["type"] == "wash":
                 instruction_type = b"\x0b"
+                instruction_target = b"\x00\x00"
+                instruction_action = b"\x00"
+                instruction_measures = b"\x00\x00\x00\x00"
+            elif instruction["type"] == "stop":
+                instruction_type = b"\x70"
                 instruction_target = b"\x00\x00"
                 instruction_action = b"\x00"
                 instruction_measures = b"\x00\x00\x00\x00"
