@@ -30,6 +30,8 @@ state_template = {
     "y_set_total_distance": 0,
     "y_set_rotate_speed": 0,
 
+    "y_position_0": 0,
+
     "x_reset_control_word": 0,
     "x_set_control_word": 0,
     "x_set_target_position": 0,
