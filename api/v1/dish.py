@@ -1,5 +1,6 @@
 import base64
 import json
+import os
 
 from flask_restful import Resource, fields, marshal_with, reqparse
 from db_model.dish import DishDbModel
@@ -49,7 +50,12 @@ class Dish(Resource):
             cook_time = new_dish["cook_time"]  # cook_time
             # image = "http://169.254.216.10:8888/static/dish_img/test.png"
             # image = "http://localhost:8888/static/dish_img/test.png"  # image
-            with open("./static/dish_img/test.png", mode="rb") as f:
+            current_file_path = os.path.abspath(__file__)
+            parent_path = os.path.dirname(current_file_path)  # v1
+            grandparent_path = os.path.dirname(parent_path)  # api
+            grandgrandparent_path = os.path.dirname(grandparent_path)  # cook-robot-middle-platform
+            image_path = os.path.join(grandgrandparent_path, "static/dish_img/test.png")
+            with open(image_path, mode="rb") as f:
                 image = "data:image/png;base64," + base64.b64encode(f.read()).decode("utf8")
             steps = new_dish["steps"]  # steps
             is_starred = 1  # is_starred
