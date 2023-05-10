@@ -2,7 +2,7 @@ import os
 import socket
 import struct
 import sys
-from functools import wraps
+import uuid
 
 from packer import StateRequestPacker
 
@@ -22,7 +22,6 @@ plc_state = {}
 state_template = {
     "time": 0,
     "machine_state": 0,
-
     "washing_state": 0,
 
     "y_reset_control_word": 0,
@@ -140,7 +139,8 @@ class UDPStateClient(UDPClient):
         data_header = data[0:3].decode("utf-8")
         if data_header == "CSR":
             global plc_state
-            state = data[14:]
+            plc_state["id"] = str(uuid.UUID(bytes=data[10:26]))
+            state = data[30:]
             for index, key in enumerate(state_template):
                 plc_state[key] = struct.unpack(">H", state[2 * index:2 * index + 2])[0]
             return plc_state

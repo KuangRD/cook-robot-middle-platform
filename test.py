@@ -1,8 +1,9 @@
-import socket
+import uuid
 
-client = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-client.bind(('127.0.0.1', 10020))
+uuid_str = '550e8400-e29b-41d4-a716-446655440000'
+uuid_obj = uuid.UUID(uuid_str)
+uuid_bytes = uuid_obj.bytes
 
-if __name__ == "__main__":
-    while 1:
-        msg, addr = client.recvfrom(1024)
+print("UUID字符串：", uuid_str)
+print("转换后的byte数组：", uuid_bytes)
+print(str(uuid_obj))

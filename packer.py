@@ -1,4 +1,5 @@
 import struct
+import uuid
 from time import time
 
 HEADER = "COOK"
@@ -20,11 +21,16 @@ class CommandPacker:
 
     def pack(self, command: dict):
         model = command["model"]
+        id = command["id"]
+        try:
+            id_bytes = uuid.UUID(id).bytes
+        except Exception as e:
+            print(e)
+            id_bytes = b"\x00" * 16
         instructions = command["instructions"]
         if len(instructions) == 0:
             raise NameError("instructions is empty")
-        data_length = 14 + 14 * len(instructions)
-        self.msg += struct.pack(">I", data_length)  # DATA_LENGTH, 4 bytes
+        self.msg += struct.pack(">I", 30 + 14 * len(instructions))  # DATA_LENGTH, 4 bytes
 
         # DATA_INFO
         self.data_info += COMMAND_DATA_HEADER.encode()  # DATA_HEADER, 3 bytes
@@ -37,18 +43,16 @@ class CommandPacker:
             self.data_info += b"\x03"
         elif model == "immediate":
             self.data_info += b"\x04"
-
         self.data_info += struct.pack(">H", len(instructions))  # INSTRUCTION_COUNT, 2 bytes
+        self.data_info += id_bytes  # UUID, 16 bytes
         self.data_info += struct.pack(">I", int(time()))  # DATA_DATETIME, 4 bytes
         self.msg += self.data_info
 
         # DATA
         instruction_no = 1
         for instruction in instructions:
-
             self.data += struct.pack(">H", instruction_no)
             instruction_no += 1
-
             if instruction["type"] == "ingredient":
                 instruction_type = b"\x01"
                 instruction_target = struct.pack(">H", instruction["target"])
@@ -121,7 +125,6 @@ class CommandPacker:
                 raise NameError("instruction type is wrong")
             self.data += instruction_type + instruction_target + instruction_action + instruction_measures \
                          + struct.pack(">I", instruction["time"])
-
         self.msg += self.data
 
 
@@ -156,16 +159,32 @@ class PLCCommandPacker:
 
     def pack(self, command: dict):
         model = command["model"]
+        id = command["id"]
+        try:
+            id_bytes = uuid.UUID(id).bytes
+        except Exception as e:
+            print(e)
+            id_bytes = b"\x00" * 16
         instructions = command["instructions"]
         if len(instructions) == 0:
             raise NameError("instructions is empty")
+        self.msg += struct.pack(">I", 30 + 14)  # DATA_LENGTH, 4 bytes
 
         # DATA_INFO
         self.data_info += COMMAND_DATA_HEADER.encode()  # DATA_HEADER, 3 bytes
         self.data_info += struct.pack(">I", self.count)  # DATA_NO, 4 bytes
-        self.data_info += b"\x01" if model == "single" else b"\x02" if model == "multiple" else b"\x03"
+        if model == "single":
+            self.data_info += b"\x01"
+        elif model == "multiple":
+            self.data_info += b"\x02"
+        elif model == "plc":
+            self.data_info += b"\x03"
+        elif model == "immediate":
+            self.data_info += b"\x04"
         self.data_info += struct.pack(">H", len(instructions))  # INSTRUCTION_COUNT, 2 bytes
+        self.data_info += id_bytes # UUID, 16 bytes
         self.data_info += struct.pack(">I", int(time()))  # DATA_DATETIME, 4 bytes
+        self.msg += self.data_info
 
         instruction_no = 1
         for instruction in instructions:
@@ -260,9 +279,6 @@ class PLCCommandPacker:
                 raise NameError("instruction type error")
             self.data += instruction_type + instruction_target + instruction_action + instruction_measures \
                          + struct.pack(">I", int(instruction["time"]))
-        data_length = len(self.data)
-        self.msg += struct.pack(">I", 14 + data_length)  # DATA_LENGTH, 4 bytes
-        self.msg += self.data_info
         self.msg += self.data
 
 

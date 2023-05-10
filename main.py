@@ -65,7 +65,7 @@ if __name__ == "__main__":
     t2.start()
 
     apscheduler = BackgroundScheduler()  # 创建调度器
-    apscheduler.add_job(state_client.send, args=(state_request_packer.msg,), trigger="interval", seconds=1, )
+    apscheduler.add_job(state_client.send, args=(state_request_packer.msg,), trigger="interval", seconds=0.5, )
     apscheduler.start()
 
     # systemStatus.run()
