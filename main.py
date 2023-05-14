@@ -10,10 +10,9 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from api.v1.dish import Dish, Dishes, StarredDishes, DishesCount, StarredDishesCount
 from api.v1.ingredient import Ingredients, Shapes
 from api.v1.seasoning import Seasonings
-from api.v1.fire import Fires
-from api.v1.stir_fry import StirFries
 from api.v1.command import Command, PLCCommand
 from api.v1.running_status import RunningStatus
+from api.v1.phone_pairing import PhonePairing
 import sys
 
 # from status.system_status import SystemStatus
@@ -36,6 +35,8 @@ api = Api(app)
 #
 # api.add_resource(Wifi, "/system-settings/wifi/<int:flag>", "/system-settings/wifi")
 # api.add_resource(Wlan, "/system-settings/wlan/<int:flag>", "/system-settings/wlan")
+api.add_resource(PhonePairing, "/system-settings/phone-pairing/<int:flag>")
+
 # api.add_resource(Status, "/system-status", resource_class_kwargs={"data": systemStatusData})
 
 api.add_resource(Dish, "/dish/", "/dish/<string:dish_id>")
@@ -47,13 +48,14 @@ api.add_resource(StarredDishesCount, "/starred-dishes-count/", "/starred-dishes-
 api.add_resource(Ingredients, "/ingredients/")
 api.add_resource(Shapes, "/shapes/")
 api.add_resource(Seasonings, "/seasonings/")
-api.add_resource(Fires, "/fires/")
-api.add_resource(StirFries, "/stir-fries/")
+# api.add_resource(Fires, "/fires/")
+# api.add_resource(StirFries, "/stir-fries/")
 
 api.add_resource(Command, "/command")
 api.add_resource(PLCCommand, "/plc-command")
 
 api.add_resource(RunningStatus, "/running-status")
+
 
 if __name__ == "__main__":
 

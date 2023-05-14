@@ -1,9 +1,28 @@
-import uuid
+import subprocess
+import re
 
-uuid_str = '550e8400-e29b-41d4-a716-446655440000'
-uuid_obj = uuid.UUID(uuid_str)
-uuid_bytes = uuid_obj.bytes
+def get_interface_info(interface_name):
+    # 运行ipconfig命令获取网络接口信息
+    output = subprocess.check_output(["ipconfig", "/all"])
+    print(output)
 
-print("UUID字符串：", uuid_str)
-print("转换后的byte数组：", uuid_bytes)
-print(str(uuid_obj))
+    # 提取指定接口的信息
+    pattern = r"(?s)({}\s.*?)\n\n".format(interface_name)
+    match = re.search(pattern, output.decode())
+
+    if match:
+        interface_info = match.group(1)
+        return interface_info.strip()
+    else:
+        return None
+
+# 指定要获取信息的接口名称
+interface_name = "Ethernet"  # 替换为您要查询的接口名称
+
+# 获取指定接口的信息
+interface_info = get_interface_info(interface_name)
+
+if interface_info:
+    print("Interface Info for {}: \n{}".format(interface_name, interface_info))
+else:
+    print("No interface information found for {}".format(interface_name))
