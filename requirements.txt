@@ -2,4 +2,8 @@ pypinyin~=0.48.0
 pyserial~=3.5
 apscheduler~=3.10.0
 flask~=2.2.2
+flask_cors
+flask_restful
+flask_sqlalchemy
 uuid~=1.30
+zeroconf~=0.62.0

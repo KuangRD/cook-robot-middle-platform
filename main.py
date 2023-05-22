@@ -12,7 +12,7 @@ from api.v1.ingredient import Ingredients, Shapes
 from api.v1.seasoning import Seasonings
 from api.v1.command import Command, PLCCommand
 from api.v1.running_status import RunningStatus
-from api.v1.phone_pairing import PhonePairing
+from api.v1.phone_pairing import PhonePairingForMachine, PhonePairingForPhone
 import sys
 
 # from status.system_status import SystemStatus
@@ -35,7 +35,9 @@ api = Api(app)
 #
 # api.add_resource(Wifi, "/system-settings/wifi/<int:flag>", "/system-settings/wifi")
 # api.add_resource(Wlan, "/system-settings/wlan/<int:flag>", "/system-settings/wlan")
-api.add_resource(PhonePairing, "/system-settings/phone-pairing/<int:flag>")
+api.add_resource(PhonePairingForMachine, "/system-settings/phone-pairing-for-machine/<int:flag>",
+                 "/system-settings/phone-pairing-for-machine")
+api.add_resource(PhonePairingForPhone, "/system-settings/phone-pairing-for-phone")
 
 # api.add_resource(Status, "/system-status", resource_class_kwargs={"data": systemStatusData})
 
@@ -55,7 +57,6 @@ api.add_resource(Command, "/command")
 api.add_resource(PLCCommand, "/plc-command")
 
 api.add_resource(RunningStatus, "/running-status")
-
 
 if __name__ == "__main__":
 
