@@ -1,9 +1,36 @@
-### 使用
+## 安装和使用
 
-```
-cd .
-conda create -n xxx python=3
-conda activate xxx
-conda install --yes --file requirements.txt （安装有问题使用pip单独安装）
-python main.py
-```
+在开始使用项目之前，请按照以下步骤设置环境。
+
+### 前提条件
+
+- 确保已经安装了Docker。
+
+### 设置环境
+
+1. 在项目的根目录下执行以下命令，以给脚本文件添加执行权限：
+
+   ```shell
+   chmod +x ./script/docker_build.sh ./script/docker_run.sh
+   ```
+### 第一次使用
+在第一次使用项目之前，需要构建开发环境。请按照以下步骤执行：
+
+1. 在项目的根目录下执行以下命令，以构建开发环境：
+
+   ```shell
+    ./script/docker_build.sh
+   ```
+
+这将使用Docker构建项目所需的开发环境。
+
+### 后续使用
+在第一次构建环境后，您可以直接进入开发环境。请按照以下步骤执行：
+
+在项目的根目录下执行以下命令，以进入开发环境：
+
+   ```shell
+    ./script/docker_run.sh
+   ```
+
+这将使用Docker运行开发环境，并将您进入该环境。
